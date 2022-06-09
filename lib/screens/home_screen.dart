@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: StreamBuilder<List<PokemonInfoResponse>>(
           stream: pokemonProvider.pokemonListBehavior,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData || snapshot.data!.isNotEmpty) {
               return ListView.builder(
                 controller: scrollController,
                 padding: EdgeInsets.all(_responsive.ip * 0.018),
