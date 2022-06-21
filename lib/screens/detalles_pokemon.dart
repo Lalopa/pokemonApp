@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pokeapi_app/models/models.dart';
+import 'package:pokeapi_app/widgets/custom_text.dart';
 
 import '../utils/responsive.dart';
 
@@ -17,6 +18,13 @@ class DetallesPokemon extends StatelessWidget {
     final String imgenPokemon = pokemon.sprites.other.dreamWorld.frontDefault;
 
     return Scaffold(
+      backgroundColor: pokemon.color,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pop(context),
+        label: const Text('Regresar'),
+        icon: const Icon(Icons.arrow_back),
+        backgroundColor: pokemon.color,
+      ),
       appBar: PreferredSize(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,8 +45,26 @@ class DetallesPokemon extends StatelessWidget {
               animatedTexts: [
                 WavyAnimatedText(pokemon.name.toUpperCase(),
                     textStyle: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 20))
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.black38))
               ],
+            ),
+            SizedBox(
+              height: _responsive.heightCustom(0.02),
+            ),
+            Center(
+              child: Text(
+                pokemon.tipoPokemon!.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  foreground: Paint()
+                    ..style = PaintingStyle.stroke
+                    ..strokeWidth = 0.5
+                    ..color = Colors.black,
+                ),
+              ),
             )
           ],
         ),
@@ -55,158 +81,208 @@ class DetallesPokemon extends StatelessWidget {
                     image: AssetImage('assets/pokeball_background.png'),
                     fit: BoxFit.contain)),
             child: Card(
-              color: const Color.fromRGBO(178, 226, 242, 95),
+              color: const Color.fromARGB(195, 178, 226, 242),
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40))),
               child: Column(
                 children: [
-                  SizedBox(height: _responsive.heightCustom(0.08)),
+                  SizedBox(height: _responsive.heightCustom(0.04)),
                   const Text(
                     'Informacion del Pokemon',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 25, color: Colors.black87),
                   ),
                   SizedBox(
                     height: _responsive.heightCustom(0.05),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('HP: '),
-                                Container(
-                                    width: _responsive.widthCustom(0.2),
-                                    alignment: Alignment.topCenter,
-                                    margin: const EdgeInsets.all(20),
-                                    child: LinearProgressIndicator(
-                                      value: pokemon.stats[0].baseStat / 100,
-                                      backgroundColor: const Color.fromRGBO(
-                                          80, 189, 212, 83),
-                                      color:
-                                          const Color.fromRGBO(77, 82, 201, 79),
-                                      minHeight: 10,
-                                    )),
-                              ]),
-                        ),
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Ataque: '),
-                                Container(
-                                    width: _responsive.widthCustom(0.2),
-                                    alignment: Alignment.topCenter,
-                                    margin: const EdgeInsets.all(20),
-                                    child: LinearProgressIndicator(
-                                      value: pokemon.stats[1].baseStat / 100,
-                                      backgroundColor: const Color.fromRGBO(
-                                          80, 189, 212, 83),
-                                      color:
-                                          const Color.fromRGBO(77, 82, 201, 79),
-                                      minHeight: 10,
-                                    )),
-                              ]),
-                        ),
-                      ],
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            SizedBox(
+                              width: _responsive.widthCustom(0.2),
+                              child: const CustomText(
+                                text: 'HP: ',
+                                fontSize: 14,
+                              ),
+                            ),
+                            Container(
+                                width: _responsive.widthCustom(0.4),
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.all(20),
+                                child: LinearProgressIndicator(
+                                  value: pokemon.stats[0].baseStat / 100,
+                                  backgroundColor:
+                                      const Color.fromRGBO(80, 189, 212, 83),
+                                  color: const Color.fromRGBO(77, 82, 201, 79),
+                                  minHeight: 10,
+                                )),
+                            CustomText(
+                              text: pokemon.stats[0].baseStat.toString(),
+                              fontSize: 14,
+                            )
+                          ]),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Defensa: '),
-                                Container(
-                                    width: _responsive.widthCustom(0.2),
-                                    alignment: Alignment.topCenter,
-                                    margin: const EdgeInsets.all(20),
-                                    child: LinearProgressIndicator(
-                                      value: pokemon.stats[2].baseStat / 100,
-                                      backgroundColor: const Color.fromRGBO(
-                                          80, 189, 212, 83),
-                                      color:
-                                          const Color.fromRGBO(77, 82, 201, 79),
-                                      minHeight: 10,
-                                    )),
-                              ]),
-                        ),
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Ataq Esp: ',
-                                ),
-                                Container(
-                                    width: _responsive.widthCustom(0.2),
-                                    alignment: Alignment.topCenter,
-                                    margin: const EdgeInsets.all(20),
-                                    child: LinearProgressIndicator(
-                                      value: pokemon.stats[3].baseStat / 100,
-                                      backgroundColor: const Color.fromRGBO(
-                                          80, 189, 212, 83),
-                                      color:
-                                          const Color.fromRGBO(77, 82, 201, 79),
-                                      minHeight: 10,
-                                    )),
-                              ]),
-                        ),
-                      ],
+                    child: Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: _responsive.widthCustom(0.2),
+                              child: const CustomText(
+                                text: 'Ataque: ',
+                                fontSize: 14,
+                              ),
+                            ),
+                            Container(
+                                width: _responsive.widthCustom(0.4),
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.all(20),
+                                child: LinearProgressIndicator(
+                                  value: pokemon.stats[1].baseStat / 100,
+                                  backgroundColor:
+                                      const Color.fromRGBO(80, 189, 212, 83),
+                                  color: const Color.fromRGBO(77, 82, 201, 79),
+                                  minHeight: 10,
+                                )),
+                            CustomText(
+                              text: pokemon.stats[1].baseStat.toString(),
+                              fontSize: 14,
+                            )
+                          ]),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Def Esp: '),
-                                Container(
-                                    width: _responsive.widthCustom(0.2),
-                                    alignment: Alignment.topCenter,
-                                    margin: const EdgeInsets.all(20),
-                                    child: LinearProgressIndicator(
-                                      value: pokemon.stats[4].baseStat / 100,
-                                      backgroundColor: const Color.fromRGBO(
-                                          80, 189, 212, 83),
-                                      color:
-                                          const Color.fromRGBO(77, 82, 201, 79),
-                                      minHeight: 10,
-                                    )),
-                              ]),
-                        ),
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Velocidad'),
-                                Container(
-                                    width: _responsive.widthCustom(0.2),
-                                    alignment: Alignment.topCenter,
-                                    margin: const EdgeInsets.all(20),
-                                    child: LinearProgressIndicator(
-                                      value: pokemon.stats[5].baseStat / 100,
-                                      backgroundColor: const Color.fromRGBO(
-                                          80, 189, 212, 83),
-                                      color:
-                                          const Color.fromRGBO(77, 82, 201, 79),
-                                      minHeight: 10,
-                                    )),
-                              ]),
-                        ),
-                      ],
+                    child: Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: _responsive.widthCustom(0.2),
+                              child: const CustomText(
+                                text: 'Defensa: ',
+                                fontSize: 14,
+                              ),
+                            ),
+                            Container(
+                                width: _responsive.widthCustom(0.4),
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.all(20),
+                                child: LinearProgressIndicator(
+                                  value: pokemon.stats[2].baseStat / 100,
+                                  backgroundColor:
+                                      const Color.fromRGBO(80, 189, 212, 83),
+                                  color: const Color.fromRGBO(77, 82, 201, 79),
+                                  minHeight: 10,
+                                )),
+                            CustomText(
+                              text: pokemon.stats[2].baseStat.toString(),
+                              fontSize: 14,
+                            )
+                          ]),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: _responsive.widthCustom(0.2),
+                              child: const CustomText(
+                                text: 'Ataq Esp: ',
+                                fontSize: 14,
+                              ),
+                            ),
+                            Container(
+                                width: _responsive.widthCustom(0.4),
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.all(20),
+                                child: LinearProgressIndicator(
+                                  value: pokemon.stats[3].baseStat / 100,
+                                  backgroundColor:
+                                      const Color.fromRGBO(80, 189, 212, 83),
+                                  color: const Color.fromRGBO(77, 82, 201, 79),
+                                  minHeight: 10,
+                                )),
+                            CustomText(
+                              text: pokemon.stats[3].baseStat.toString(),
+                              fontSize: 14,
+                            )
+                          ]),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: _responsive.widthCustom(0.2),
+                              child: const CustomText(
+                                text: 'Def Esp: ',
+                                fontSize: 14,
+                              ),
+                            ),
+                            Container(
+                                width: _responsive.widthCustom(0.4),
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.all(20),
+                                child: LinearProgressIndicator(
+                                  value: pokemon.stats[4].baseStat / 100,
+                                  backgroundColor:
+                                      const Color.fromRGBO(80, 189, 212, 83),
+                                  color: const Color.fromRGBO(77, 82, 201, 79),
+                                  minHeight: 10,
+                                )),
+                            CustomText(
+                              text: pokemon.stats[4].baseStat.toString(),
+                              fontSize: 14,
+                            )
+                          ]),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: _responsive.widthCustom(0.2),
+                              child: const CustomText(
+                                text: 'Velocidad',
+                                fontSize: 14,
+                              ),
+                            ),
+                            Container(
+                                width: _responsive.widthCustom(0.4),
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.all(20),
+                                child: LinearProgressIndicator(
+                                  value: pokemon.stats[5].baseStat / 100,
+                                  backgroundColor:
+                                      const Color.fromRGBO(80, 189, 212, 83),
+                                  color: const Color.fromRGBO(77, 82, 201, 79),
+                                  minHeight: 10,
+                                )),
+                            CustomText(
+                              text: pokemon.stats[5].baseStat.toString(),
+                              fontSize: 14,
+                            )
+                          ]),
+                    ),
+                  )
                 ],
               ),
             ),

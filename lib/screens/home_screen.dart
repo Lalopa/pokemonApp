@@ -21,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController scrollController = ScrollController();
 
   void _onListener() async {
-    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent) {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent) {
       await pokemonProvider.getMorePokemon();
       setState(() {});
     }
@@ -30,7 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    pokemonProvider = Provider.of<PokemonProvider>(context, listen: false)..getOnDisplayPokemon();
+    pokemonProvider = Provider.of<PokemonProvider>(context, listen: false)
+      ..getOnDisplayPokemon();
     scrollController.addListener(_onListener);
   }
 
@@ -47,16 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(_responsive.height - _responsive.heightCustom(0.73)),
+        preferredSize: Size.fromHeight(
+            _responsive.height - _responsive.heightCustom(0.73)),
         child: Hero(
           tag: 'card',
           child: Container(
             decoration: const BoxDecoration(
-                image: DecorationImage(image: AssetImage('assets/pokeball_background.png'), fit: BoxFit.cover)),
+                image: DecorationImage(
+                    image: AssetImage('assets/pokeball_background.png'),
+                    fit: BoxFit.cover)),
             child: Card(
               color: const Color.fromRGBO(178, 226, 242, 95),
               shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40))),
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40))),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -66,7 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 60, width: 60, child: Image(image: AssetImage('assets/pokeball.gif'))),
+                      const SizedBox(
+                          height: 60,
+                          width: 60,
+                          child:
+                              Image(image: AssetImage('assets/pokeball.gif'))),
                       const Text(
                         'Pokemones',
                         style: TextStyle(fontSize: 20),
@@ -79,7 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 30,
                           child: IconButton(
                               onPressed: () async {
-                                await showSearch(context: context, delegate: PokemonSearchDelegate());
+                                await showSearch(
+                                    context: context,
+                                    delegate: PokemonSearchDelegate());
                                 pokemonProvider.clear();
                                 pokemonProvider.getOnDisplayPokemon();
                               },
@@ -89,6 +102,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    width: _responsive.widthCustom(0.3),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: const Color.fromARGB(255, 132, 179, 194)),
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'gallery');
+                      },
+                      child: Row(
+                        children: const [
+                          Text('Libreria'),
+                          Icon(Icons.photo_album),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -98,14 +127,30 @@ class _HomeScreenState extends State<HomeScreen> {
       body: StreamBuilder<List<PokemonInfoResponse>>(
           stream: pokemonProvider.pokemonListBehavior,
           builder: (context, snapshot) {
-            if (snapshot.hasData || snapshot.data!.isNotEmpty) {
-              return ListView.builder(
-                controller: scrollController,
-                padding: EdgeInsets.all(_responsive.ip * 0.018),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (_, int index) {
-                  return CardPokemon(pokemon: snapshot.data![index]);
-                },
+            if (snapshot.hasData ||
+                (snapshot.data != null && snapshot.data!.isNotEmpty)) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      padding: EdgeInsets.all(_responsive.ip * 0.018),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (_, int index) {
+                        return CardPokemon(pokemon: snapshot.data![index]);
+                      },
+                    ),
+                  ),
+                  if (pokemonProvider.loading == true)
+                    Column(
+                      children: const [
+                        Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        SizedBox(height: 50)
+                      ],
+                    )
+                ],
               );
             }
             return const Center(
