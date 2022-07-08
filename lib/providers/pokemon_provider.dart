@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokeapi_app/models/models.dart';
@@ -12,11 +10,9 @@ class PokemonProvider extends ChangeNotifier {
   int limitTemporal = 10;
   late PokemonResponse data;
   List<PokemonInfoResponse> results = [];
-  BehaviorSubject<List<PokemonInfoResponse>> pokemonListBehavior =
-      BehaviorSubject();
-
   int numPagina = 1;
   bool loading = false;
+  BehaviorSubject<List<PokemonInfoResponse>> pokemonListBehavior = BehaviorSubject();
 
   PokemonProvider() {
     if (kDebugMode) {
@@ -26,8 +22,7 @@ class PokemonProvider extends ChangeNotifier {
   }
 
   Future<void> getOnDisplayPokemon() async {
-    final url = Uri.https(_baseUrl, 'api/v2/pokemon',
-        {'limit': '$limitTemporal', 'offset': '$offset'});
+    final url = Uri.https(_baseUrl, 'api/v2/pokemon', {'limit': '$limitTemporal', 'offset': '$offset'});
 
     final response = await http.get(url);
     final pokemon = PokemonResponse.fromJson(response.body);
@@ -56,8 +51,7 @@ class PokemonProvider extends ChangeNotifier {
   }
 
   Future<void> morePokemon() async {
-    final url = Uri.https(_baseUrl, 'api/v2/pokemon',
-        {'limit': '$limitTemporal', 'offset': '$offset'});
+    final url = Uri.https(_baseUrl, 'api/v2/pokemon', {'limit': '$limitTemporal', 'offset': '$offset'});
 
     final response = await http.get(url);
     final pokemon = PokemonResponse.fromJson(response.body);
@@ -80,31 +74,24 @@ class PokemonProvider extends ChangeNotifier {
         resultList.add(result);
       }
     }
-    List<PokemonInfoResponse> temp = [
-      ...pokemonListBehavior.value,
-      ...resultList
-    ];
+    List<PokemonInfoResponse> temp = [...pokemonListBehavior.value, ...resultList];
     pokemonListBehavior.sink.add(temp);
   }
 
   Future<List<PokemonInfoResponse>> searchPokemon(String? query) async {
     if (!loading) {
       loading = true;
-      final url = Uri.https(_baseUrl, 'api/v2/pokemon',
-          {'limit': '$_limit', 'offset': '$offset'});
+      final url = Uri.https(_baseUrl, 'api/v2/pokemon', {'limit': '$_limit', 'offset': '$offset'});
       final response = await http.get(url);
       try {
         if (response.statusCode == 200) {
           data = PokemonResponse.fromJson(response.body);
           List<PokemonInfoResponse> temp = [];
           var results = data.results
-              .where((element) => element.name
-                  .toLowerCase()
-                  .contains(((query ?? '').toLowerCase())))
+              .where((element) => element.name.toLowerCase().contains(((query ?? '').toLowerCase())))
               .toList();
           for (int i = 0; i < results.length; i++) {
-            final url =
-                Uri.https(_baseUrl, 'api/v2/pokemon/${results[i].name}');
+            final url = Uri.https(_baseUrl, 'api/v2/pokemon/${results[i].name}');
             final response = await http.get(url);
             final result = PokemonInfoResponse.fromJson(response.body);
             temp.add(result);

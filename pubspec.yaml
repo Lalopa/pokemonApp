@@ -40,6 +40,8 @@ dependencies:
   rxdart: ^0.27.3
   flutter_svg: ^1.0.3
   animated_text_kit: ^4.2.1
+  bloc: ^8.0.3
+  equatable: ^2.0.3
  
 
 dev_dependencies:
