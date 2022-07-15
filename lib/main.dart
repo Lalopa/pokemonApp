@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pokeapi_app/providers/pokemon_provider.dart';
+import 'package:pokeapi_app/bloc/pokemon_bloc.dart';
+
 import 'package:pokeapi_app/screens/gallery_screen.dart';
 import 'package:pokeapi_app/screens/screens.dart';
-import 'package:provider/provider.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const AppState());
@@ -13,11 +15,10 @@ class AppState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => PokemonProvider(), //ya se inicializa el provider
-          lazy: false,
+        BlocProvider<PokemonBloc>(
+          create: (_) => PokemonBloc(),
         )
       ],
       child: const MyApp(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pokeapi_app/providers/pokemon_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokeapi_app/bloc/pokemon_bloc.dart';
 
 import 'dart:math' as math;
 
@@ -13,20 +13,27 @@ class GalleryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pokemonProvider = Provider.of<PokemonProvider>(context);
+    //final pokemonBloc = BlocProvider.of<PokemonBloc>(context);
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: CoolSwiper(
-            children: List.generate(
-              10,
-              (index) => CardContent(
-                  pokemon: pokemonProvider.pokemonListBehavior.value[index]),
+      body: BlocBuilder<PokemonBloc, PokemonState>(
+        builder: ((context, state) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: CoolSwiper(
+                  children: List.generate(
+                    10,
+                    (index) => CardContent(
+                        pokemon: state.pokemonInfoResponseList[index]),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
