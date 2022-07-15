@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokeapi_app/bloc/pokemon_bloc.dart';
+import 'package:pokeapi_app/utils/enums.dart';
 
 import 'dart:math' as math;
 
@@ -13,28 +14,51 @@ class GalleryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final pokemonBloc = BlocProvider.of<PokemonBloc>(context);
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: BlocBuilder<PokemonBloc, PokemonState>(
-        builder: ((context, state) {
+    return BlocProvider(
+      create: (context) => PokemonBloc()..add(const GetPokemon()),
+      child: const GalleryContent(),
+    );
+  }
+}
+
+class GalleryContent extends StatelessWidget {
+  const GalleryContent({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final _pokemonBloc = context.watch<PokemonBloc>();
+    return BlocBuilder<PokemonBloc, PokemonState>(
+      builder: (context, state) {
+        if (state.pokemonRequestStatus == PokemonRequestStatus.loading ||
+            state.pokemonRequestStatus == PokemonRequestStatus.pure) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state.pokemonRequestStatus == PokemonRequestStatus.successInfo) {
           return Scaffold(
-            backgroundColor: Colors.black,
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: CoolSwiper(
-                  children: List.generate(
-                    10,
-                    (index) => CardContent(
-                        pokemon: state.pokemonInfoResponseList[index]),
+              backgroundColor: Colors.black,
+              body: Scaffold(
+                backgroundColor: Colors.black,
+                body: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: CoolSwiper(
+                      children: List.generate(
+                        _pokemonBloc.state.pokemonInfoResponseList.length - 1,
+                        (index) => CardContent(pokemon: _pokemonBloc.state.pokemonInfoResponseList[index]),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              ));
+        } else {
+          return const Center(
+            child: Text('Error'),
           );
-        }),
-      ),
+        }
+      },
     );
   }
 }
@@ -55,13 +79,11 @@ class CoolSwiper extends StatefulWidget {
   State<CoolSwiper> createState() => _CoolSwiperState();
 }
 
-class _CoolSwiperState extends State<CoolSwiper>
-    with SingleTickerProviderStateMixin {
+class _CoolSwiperState extends State<CoolSwiper> with SingleTickerProviderStateMixin {
   late final AnimationController backgroundCardsAnimationController;
 
   late final List<Widget> stackChildren;
-  final ValueNotifier<bool> _backgroundCardsAreInFrontNotifier =
-      ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _backgroundCardsAreInFrontNotifier = ValueNotifier<bool>(false);
   bool fireBackgroundCardsAnimation = false;
 
   late final List<SwiperCard> _cards;
@@ -133,17 +155,13 @@ class _CoolSwiperState extends State<CoolSwiper>
         ValueListenableBuilder(
           valueListenable: _backgroundCardsAreInFrontNotifier,
           builder: (c, bool backgroundCardsAreInFront, _) =>
-              backgroundCardsAreInFront
-                  ? Positioned(child: Container())
-                  : _buildBackgroundCardsStack(),
+              backgroundCardsAreInFront ? Positioned(child: Container()) : _buildBackgroundCardsStack(),
         ),
         _buildFrontCard(),
         ValueListenableBuilder(
           valueListenable: _backgroundCardsAreInFrontNotifier,
           builder: (c, bool backgroundCardsAreInFront, _) =>
-              backgroundCardsAreInFront
-                  ? _buildBackgroundCardsStack()
-                  : Positioned(child: Container()),
+              backgroundCardsAreInFront ? _buildBackgroundCardsStack() : Positioned(child: Container()),
         ),
       ],
     );
@@ -203,8 +221,7 @@ class CoolSwiperCard extends StatefulWidget {
   State<CoolSwiperCard> createState() => _CoolSwiperCardState();
 }
 
-class _CoolSwiperCardState extends State<CoolSwiperCard>
-    with SingleTickerProviderStateMixin {
+class _CoolSwiperCardState extends State<CoolSwiperCard> with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
 
   late final Animation<double> rotationAnimation;
@@ -232,8 +249,7 @@ class _CoolSwiperCardState extends State<CoolSwiperCard>
     final xPosition = details.globalPosition.dx;
     final yPosition = details.localPosition.dy;
     final angleMultiplier = xPosition > screenWidth / 2 ? -1 : 1;
-    rotationAnimationTween.end =
-        Constants.rotationAnimationAngleDeg * angleMultiplier;
+    rotationAnimationTween.end = Constants.rotationAnimationAngleDeg * angleMultiplier;
 
     // Update values of the small angle drag start rotation animation
     setState(() {
@@ -267,9 +283,8 @@ class _CoolSwiperCardState extends State<CoolSwiperCard>
   void _onVerticalDragEnd(DragEndDetails details) {
     if ((yDragOffset * -1) > widget.initAnimationOffset) {
       widget.onAnimationTrigger();
-      slideDownAnimationTween.end = Constants.throwSlideYDistance +
-          yDragOffset.abs() -
-          (widget.card.totalCount - 1) * Constants.yOffset;
+      slideDownAnimationTween.end =
+          Constants.throwSlideYDistance + yDragOffset.abs() - (widget.card.totalCount - 1) * Constants.yOffset;
 
       animationController.forward().then((value) {
         widget.onVerticalDragEnd();
@@ -420,8 +435,7 @@ class CoolSwiperCardWrapper extends StatefulWidget {
   State<CoolSwiperCardWrapper> createState() => _CoolSwiperCardWrapperState();
 }
 
-class _CoolSwiperCardWrapperState extends State<CoolSwiperCardWrapper>
-    with SingleTickerProviderStateMixin {
+class _CoolSwiperCardWrapperState extends State<CoolSwiperCardWrapper> with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
   late final Animation<double> yOffsetAnimation;
   late final Animation<double> scaleAnimation;
@@ -484,19 +498,14 @@ class CardContent extends StatelessWidget {
         decoration: BoxDecoration(
             color: pokemon.color,
             borderRadius: BorderRadius.circular(18),
-            image: const DecorationImage(
-                image: AssetImage('assets/pokeballView.png'),
-                fit: BoxFit.cover,
-                opacity: 0.2)),
+            image:
+                const DecorationImage(image: AssetImage('assets/pokeballView.png'), fit: BoxFit.cover, opacity: 0.2)),
         child: SizedBox(
           child: Column(
             children: [
               Text(
                 pokemon.name.toUpperCase(),
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
+                style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 5,
@@ -560,8 +569,7 @@ class Constants {
 
   static const double throwSlideYDistance = 200;
 
-  static const Duration backgroundCardsAnimationDuration =
-      Duration(milliseconds: 300);
+  static const Duration backgroundCardsAnimationDuration = Duration(milliseconds: 300);
   static const Duration swipeAnimationDuration = Duration(milliseconds: 500);
 }
 
