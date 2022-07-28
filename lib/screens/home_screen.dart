@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokeapi_app/bloc/pokemon_bloc.dart';
-
+import 'package:pokeapi_app/models/models.dart';
 import 'package:pokeapi_app/search/search_delegate.dart';
+
+import 'package:pokeapi_app/utils/enums.dart';
 
 import 'package:pokeapi_app/widgets/widgets.dart';
 
@@ -21,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onListener() async {
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent) {
-      //BlocProvider.of<PokemonBloc>(context).add(const GetMorePokemon());
+      BlocProvider.of<PokemonBloc>(context).add(const MorePokemon());
 
       setState(() {});
     }
@@ -91,9 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 30,
                               child: IconButton(
                                   onPressed: () async {
-                                    await showSearch(
+                                    await showSearch<PokemonInfoResponse>(
                                         context: context,
-                                        delegate: PokemonSearchDelegate());
+                                        delegate: PokemonSearchDelegate(
+                                            BlocProvider.of<PokemonBloc>(
+                                                context)));
                                   },
                                   icon: const Icon(Icons.search_outlined))),
                           SizedBox(
@@ -126,21 +130,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           body: BlocBuilder<PokemonBloc, PokemonState>(
             builder: (context, state) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      padding: EdgeInsets.all(_responsive.ip * 0.018),
-                      itemCount: state.pokemonInfoResponseList.length,
-                      itemBuilder: (_, int index) {
-                        return CardPokemon(
-                            pokemon: state.pokemonInfoResponseList[index]);
-                      },
+              if (state.pokemonRequestStatus == PokemonRequestStatus.loading ||
+                  state.pokemonRequestStatus == PokemonRequestStatus.pure) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (state.pokemonRequestStatus ==
+                  PokemonRequestStatus.successInfo) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        padding: EdgeInsets.all(_responsive.ip * 0.018),
+                        itemCount: state.pokemonInfoResponseList.length,
+                        itemBuilder: (_, int index) {
+                          return CardPokemon(
+                              pokemon: state.pokemonInfoResponseList[index]);
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              );
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: Text('Error'),
+                );
+              }
             },
           )),
     );

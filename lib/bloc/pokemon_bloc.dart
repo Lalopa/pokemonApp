@@ -14,9 +14,10 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
     on<PokemonEvent>((event, emit) async {
       //Traer los primeros 10 pokemons
       if (event is GetPokemon) {
-        emit(state.copyWith(pokemonRequestStatus: PokemonRequestStatus.loading));
-        final url = Uri.https(
-            state.baseUrl, 'api/v2/pokemon', {'limit': '${state.limitTemporal}', 'offset': '${state.offset}'});
+        emit(
+            state.copyWith(pokemonRequestStatus: PokemonRequestStatus.loading));
+        final url = Uri.https(state.baseUrl, 'api/v2/pokemon',
+            {'limit': '${state.limitTemporal}', 'offset': '${state.offset}'});
 
         final response = await http.get(url);
         final pokemon = PokemonResponse.fromJson(response.body);
@@ -29,7 +30,9 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
           final result = PokemonInfoResponse.fromJson(response.body);
           temp.add(result);
         }
-        emit(state.copyWith(pokemonInfoResponseList: temp, pokemonRequestStatus: PokemonRequestStatus.successInfo));
+        emit(state.copyWith(
+            pokemonInfoResponseList: temp,
+            pokemonRequestStatus: PokemonRequestStatus.successInfo));
       }
       //Validar si se necesita traer 10 pokemons mas
       else if (event is GetMorePokemon) {
@@ -44,21 +47,26 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
       }
       //Buscar pokemon en especifico
       else if (event is SearchPokemon) {
+        emit(
+            state.copyWith(pokemonRequestStatus: PokemonRequestStatus.loading));
         if (!state.loading) {
           emit(state.copyWith(loading: true));
 
-          final url =
-              Uri.https(state.baseUrl, 'api/v2/pokemon', {'limit': '${state.limit}', 'offset': '${state.offset}'});
+          final url = Uri.https(state.baseUrl, 'api/v2/pokemon',
+              {'limit': '${state.limit}', 'offset': '${state.offset}'});
           final response = await http.get(url);
           try {
             if (response.statusCode == 200) {
               PokemonResponse data = PokemonResponse.fromJson(response.body);
               List<PokemonInfoResponse> temp = [];
               var results = data.results
-                  .where((element) => element.name.toLowerCase().contains(((event.query).toLowerCase())))
+                  .where((element) => element.name
+                      .toLowerCase()
+                      .contains(((event.query).toLowerCase())))
                   .toList();
               for (int i = 0; i < results.length; i++) {
-                final url = Uri.https(state.baseUrl, 'api/v2/pokemon/${results[i].name}');
+                final url = Uri.https(
+                    state.baseUrl, 'api/v2/pokemon/${results[i].name}');
                 final response = await http.get(url);
                 final result = PokemonInfoResponse.fromJson(response.body);
                 temp.add(result);
@@ -74,7 +82,9 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
               print('error: $e');
             }
           }
-          emit(state.copyWith(loading: false));
+          emit(state.copyWith(
+              loading: false,
+              pokemonRequestStatus: PokemonRequestStatus.successInfo));
 
           //return emit(state.copyWith());
 
@@ -83,8 +93,8 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
       }
       //Traer 10 pokemons mas apartir del ultimo que se obtuvo
       else if (event is MorePokemon) {
-        final url = Uri.https(
-            state.baseUrl, 'api/v2/pokemon', {'limit': '${state.limitTemporal}', 'offset': '${state.offset}'});
+        final url = Uri.https(state.baseUrl, 'api/v2/pokemon',
+            {'limit': '${state.limitTemporal}', 'offset': '${state.offset}'});
 
         final response = await http.get(url);
         final pokemon = PokemonResponse.fromJson(response.body);
@@ -107,7 +117,10 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
             resultList.add(result);
           }
         }
-        List<PokemonInfoResponse> temp = [...state.pokemonInfoResponseList, ...resultList];
+        List<PokemonInfoResponse> temp = [
+          ...state.pokemonInfoResponseList,
+          ...resultList
+        ];
 
         emit(state.copyWith(pokemonInfoResponseList: temp));
       }
