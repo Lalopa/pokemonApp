@@ -37,21 +37,12 @@ class PokemonState extends Equatable {
         offset: offset ?? this.offset,
         limitTemporal: limitTemporal ?? this.limitTemporal,
         numPagina: numPagina ?? this.numPagina,
-        pokemonInfoResponseList:
-            pokemonInfoResponseList ?? this.pokemonInfoResponseList,
+        pokemonInfoResponseList: pokemonInfoResponseList ?? this.pokemonInfoResponseList,
         pokemonRequestStatus: pokemonRequestStatus ?? this.pokemonRequestStatus,
         loading: loading ?? this.loading);
   }
 
   @override
-  List<Object?> get props => [
-        baseUrl,
-        limit,
-        offset,
-        limitTemporal,
-        numPagina,
-        pokemonInfoResponseList,
-        pokemonRequestStatus,
-        loading
-      ];
+  List<Object?> get props =>
+      [baseUrl, limit, offset, limitTemporal, numPagina, pokemonInfoResponseList, pokemonRequestStatus, loading];
 }
